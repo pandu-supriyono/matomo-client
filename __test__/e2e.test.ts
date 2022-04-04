@@ -28,4 +28,19 @@ describe('Matomo Client', () => {
 			})).resolves.toBeDefined());
 		});
 	});
+
+	describe('get page titles', () => {
+		it('calls with default params', async () => {
+			await (expect(matomoClient.getPageTitles()).resolves.toBeDefined());
+		});
+
+		it('calls with date ranges', async () => {
+			await (expect(matomoClient.getPageTitles({
+				period: {
+					from: new Date('2020-01-01'),
+					to: new Date('2021-01-1')
+				}
+			})).resolves.toBeDefined());
+		});
+	});
 });
