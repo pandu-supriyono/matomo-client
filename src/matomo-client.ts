@@ -1,8 +1,7 @@
 import { format } from 'date-fns';
 import { StringifiableRecord, stringifyUrl } from 'query-string';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import * as z from 'zod';
-import { UnexpectedMatomoResponse } from './error';
 import camelcaseKeys from 'camelcase-keys';
 
 export interface MatomoClientOptions {
@@ -73,20 +72,6 @@ export class MatomoClient {
 		return this.isDateRange(date) ? this.formatDateRange(date) : this.formatDateObj(date);
 	}
 
-	private parseWith<T extends z.ZodRawShape>(z: z.ZodObject<T> | z.ZodEffects<z.ZodObject<T>>, data: unknown) {
-		const result = z.safeParse(data);
-
-		if (result.success === true) {
-			return result.data;
-		} else {
-			throw new UnexpectedMatomoResponse(result.error.errors);
-		}
-	}
-
-	private parseAxiosResponse<T extends z.ZodRawShape>(z: z.ZodObject<T> | z.ZodEffects<z.ZodObject<T>>) {
-		return (res: AxiosResponse) => this.parseWith(z, res.data);
-	}
-
 	public async getVisitors(options: {
 		period: Period
 		date?: Date
@@ -114,20 +99,10 @@ export class MatomoClient {
 			'bounce_rate': z.string(),
 			'nb_actions_per_visit': z.number(),
 			'avg_time_on_site': z.number()
-		});
+		}).transform(camelcaseKeys);
 
 		return axios.get(url)
-			.then(this.parseAxiosResponse(expect)).then(((res) => ({
-				visits: res.nb_visits,
-				actions: res.nb_actions,
-				visitsConverted: res.nb_visits_converted,
-				bounceCount: res.bounce_count,
-				sumVisitLength: res.sum_visit_length,
-				maxActions: res.max_actions,
-				bounceRate: res.bounce_rate,
-				actionsPerVisit: res.nb_actions_per_visit,
-				avgTimeOnSite: res.avg_time_on_site
-			})));
+			.then((res) => expect.parse(res.data));
 	}
 
 	public async getPageTitles(options: {

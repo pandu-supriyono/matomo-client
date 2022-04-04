@@ -70,14 +70,14 @@ describe('matomo client', () => {
 			const result = await matomoClient.getVisitors();
 
 			const expected = {
-				visits: 11635,
-				actions: 24481,
-				visitsConverted: 0,
+				nbVisits: 11635,
+				nbActions: 24481,
+				nbVisitsConverted: 0,
 				bounceCount: 6926,
 				sumVisitLength: 1451671,
 				maxActions: 46,
 				bounceRate: '60%',
-				actionsPerVisit: 2.1,
+				nbActionsPerVisit: 2.1,
 				avgTimeOnSite: 125
 			};
 
@@ -91,7 +91,7 @@ describe('matomo client', () => {
 				}
 			});
 
-			await expect(matomoClient.getVisitors()).rejects.toThrowError('The Matomo API returned an unexpected response and could not be safely typed');
+			await expect(matomoClient.getVisitors()).rejects.toThrowError();
 		});
 
 		it('calls axios get with the supplied url', async() => {
