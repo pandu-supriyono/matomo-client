@@ -3,8 +3,9 @@ on:
   push:
     branches: [main]
 jobs:
-   build:
+   release:
     runs-on: ubuntu-latest
+    environment: release
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
