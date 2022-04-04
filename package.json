@@ -2,15 +2,15 @@
   "name": "matomo-client",
   "version": "0.0.1",
   "description": "",
+  "license": "MIT",
   "main": "index.js",
   "scripts": {
     "test": "jest src",
     "test:e2e": "jest ./__test__ --runInBand",
     "test:watch": "jest src --watchAll"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["matomo", "piwik", "analytics"],
+  "author": "Pandu Supriyono",
   "dependencies": {
     "axios": "^0.26.1",
     "camelcase-keys": "^7.0.2",
