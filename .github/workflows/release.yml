@@ -4,7 +4,7 @@ on:
     branches: 
       - main
 jobs:
-   release:
+   test:
     runs-on: ubuntu-latest
     environment: release
     steps:
@@ -18,3 +18,7 @@ jobs:
       run: npm test
     - name: End-to-end tests
       run: npm run test:e2e
+      env:
+        MATOMO_AUTH_TOKEN: ${{ secrets.MATOMO_AUTH_TOKEN }}
+        MATOMO_SITE_ID: ${{ secrets.MATOMO_SITE_ID }}
+        MATOMO_SITE_URL: ${{ secrets.MATOMO_SITE_URL }}
