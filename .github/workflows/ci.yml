@@ -4,7 +4,7 @@ on:
     branches: 
       - main
 jobs:
-   test:
+  test:
     runs-on: ubuntu-latest
     environment: release
     steps:
@@ -22,3 +22,22 @@ jobs:
         MATOMO_AUTH_TOKEN: ${{ secrets.MATOMO_AUTH_TOKEN }}
         MATOMO_SITE_ID: ${{ secrets.MATOMO_SITE_ID }}
         MATOMO_SITE_URL: ${{ secrets.MATOMO_SITE_URL }}
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: NPM install
+      run: npm ci
+    - name: NPM build
+      run: npm build
+    - name: NPM publish
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+
