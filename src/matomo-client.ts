@@ -111,7 +111,7 @@ export class MatomoClient {
 	} = {
 		period: 'day',
 		date: new Date()
-	}) { 
+	}) {
 		const { period = 'day', date = new Date() } = options;
 
 		const formattedDate = this.isDateRange(period) ? this.formatDate(period) : this.formatDate(date);
@@ -170,10 +170,36 @@ export class MatomoClient {
 		})).transform(camelcaseKeys);
 
 		return axios.get(url)
-			.then((res) => {
-				console.log(res);
-				return res;
-			})
 			.then((res => expect.parse(res.data)));
+	}
+
+	public async getCounters(lastMinutes: number) {
+		if (lastMinutes === null || lastMinutes === undefined) {
+			throw new Error('lastMinutes must be supplied');
+		}
+		if (lastMinutes < 1) {
+			throw new Error('lastMinutes must be greater than 0');
+		}
+		if (lastMinutes > 4000) {
+			throw new Error('lastMinutes can not be greater than 4000');
+		}
+
+		const queryObj = {
+			...this.baseConfig(),
+			method: 'Live.getCounters',
+			lastMinutes
+		};
+
+		const url = this.url(queryObj);
+
+		const expect = z.array(z.object({
+			visits: numeric,
+			actions: numeric,
+			visitors: numeric,
+			visitsConverted: numeric
+		}));
+
+		return axios.get(url)
+			.then((res) => expect.parse(res.data));
 	}
 }

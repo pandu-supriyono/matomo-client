@@ -43,4 +43,10 @@ describe('Matomo Client', () => {
 			})).resolves.toBeDefined());
 		});
 	});
+
+	describe('get counters', () => {
+		it('calls with a valid lastMinutes param', async () => {
+			await (expect(matomoClient.getCounters(1)).resolves.toBeDefined());
+		});
+	});
 });

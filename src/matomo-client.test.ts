@@ -125,4 +125,69 @@ describe('matomo client', () => {
 
 	});
 
+	describe('get counters', () => {
+
+		beforeEach(() => {
+			mockedAxios.get.mockResolvedValue({
+				data: [{
+					'visits': '2532',
+					'actions': '4988',
+					'visitors': '2156',
+					'visitsConverted': '0'
+				}]
+			});
+		});
+		it('throws an error when lastMinutes is not supplied', async () => {
+			//@ts-expect-error test for missing required param
+			await expect(() => matomoClient.getCounters()).rejects.toThrowError('lastMinutes must be supplied');
+		});
+
+		it('throws an error when lastMinutes is less than 1', async () => {
+			await expect(() => matomoClient.getCounters(0)).rejects.toThrowError('lastMinutes must be greater than 0');
+		});
+
+		it('throws an error when lastMinutes greater than 4000', async () => {
+			await expect(() => matomoClient.getCounters(4001)).rejects.toThrowError('lastMinutes can not be greater than 4000');
+		});
+
+		it('decodes an expected response', async () => {
+			const expected = [{
+				visits: 2532,
+				actions: 4988,
+				visitors: 2156,
+				visitsConverted: 0
+			}];
+
+			const result = await matomoClient.getCounters(1);
+
+			expect(result).toEqual(expected);
+		});
+
+		it('throws on an unexpected response', async () => {
+			mockedAxios.get.mockResolvedValue({
+				data: [{
+					'visits': true,
+					'actions': '4988',
+					'visitors': '2156',
+					'visitsConverted': '0'
+				}]
+			});
+
+			await expect(() => matomoClient.getCounters(1)).rejects.toThrowError();
+		});
+
+		it('calls the REST API with the Live.getCounters method', async () => {
+			await matomoClient.getCounters(1);
+
+			expect(getSpy).toHaveBeenCalledWith(expect.stringContaining('method=Live.getCounters'));
+		});
+
+		it('calls the REST API with lastMinutes', async () => {
+			await matomoClient.getCounters(500);
+
+			expect(getSpy).toHaveBeenCalledWith(expect.stringContaining('lastMinutes=500'));
+		});
+
+	});
+
 });
